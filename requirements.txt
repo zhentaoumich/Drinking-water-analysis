@@ -3,3 +3,4 @@ plotly
 wntr
 networkx
 folium
+streamlit_folium
