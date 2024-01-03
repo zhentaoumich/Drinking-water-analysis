@@ -21,13 +21,14 @@ st.session_state['inp'] = 'data/example.inp'
 st.session_state['rpt'] = 'data/example.out'#default path for rpt file
 st.session_state['node'] = None
 st.session_state['link'] = None
+st.session_state['fig_2d'] = None
 
 #create a sidebar
 st.sidebar.title(side_bar_text)
 
 uploaded_file = st.sidebar.file_uploader("Choose a EPANET file",type=['inp'])
 
-side_bar_option = st.sidebar.radio('Pages', ['Home', 'Visulization', 'Analysis', 'Simulation', 'About'])
+side_bar_option = st.sidebar.radio('Pages', ['Home', 'Visulization', 'Analysis', 'Simulation', 'Control','About'])
 
 
 
@@ -102,7 +103,7 @@ def home():
                               name = 'Links',
                               showlegend=False
                               ))
-    
+    st.session_state['fig_2d'] = fig_2d 
     st.plotly_chart(fig_2d)
   
   return None
@@ -161,6 +162,52 @@ def analysis():
   
   return None
 
+def control():
+  
+  col1, col2 = st.columns(2)
+  with col1:
+    st.write('Control model')
+    #st.write('Pick a variable to control')
+    #add a dropdown menu
+    select_option = st.selectbox('Select an node/link', ['nodes','links'])
+    if select_option == 'nodes':
+      #add a dropdown menu
+      id_select_option = st.selectbox('Select id', st.session_state['node']['name'])
+      variable_select_option = st.selectbox('Select variable', ['elevation','initial_quality'])
+      #write default value
+      st.write('Default value:', st.session_state['node'].loc[st.session_state['node']['name'] == id_select_option, variable_select_option].iloc[0])
+      
+    elif select_option == 'links':
+      #add a dropdown menu
+      id_select_option = st.selectbox('Select id', st.session_state['link']['name'])
+      variable_select_option = st.selectbox('Select variable', ['diameter','length','roughness'])
+      #default value
+      st.write('Default value:', st.session_state['link'].loc[st.session_state['link']['name'] == id_select_option, variable_select_option].iloc[0])      
+
+    control_value = st.text_input('Control value', '0')
+    st.write('', control_value)
+    
+  
+  with col2:
+    st.write('Pick a variable to compare')
+    select_option2 = st.selectbox('Select an node/link', ['node','link'])
+    # if select_option2 == 'node':
+    #   #add a dropdown menu
+    #   id_select_option2 = st.selectbox('Select id', st.session_state['node']['name'])
+    #   variable_select_option2 = st.selectbox('Select variable', ['elevation','initial_quality'])
+    #   #write default value
+    #   st.write('Default value:', st.session_state['node'].loc[st.session_state['node']['name'] == id_select_option, variable_select_option2].iloc[0])
+      
+    # elif select_option2 == 'link':
+    #   #add a dropdown menu
+    #   id_select_option2 = st.selectbox('Select id', st.session_state['link']['name'])
+    #   variable_select_option2 = st.selectbox('Select variable', ['diameter','length','roughness','flow'])
+    #   #default value
+    #   st.write('Default value:', st.session_state['link'].loc[st.session_state['link']['name'] == id_select_option, variable_select_option2].iloc[0])      
+
+  
+  return None
+
 if side_bar_option == 'Home':
   home()
 elif side_bar_option == 'Visulization':
@@ -168,3 +215,10 @@ elif side_bar_option == 'Visulization':
 
 elif side_bar_option == 'Analysis':
   analysis()
+  
+elif side_bar_option == 'Simulation':
+  #simulation()
+  pass
+
+elif side_bar_option == 'Control':
+  control()
